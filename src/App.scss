@@ -1,0 +1,21 @@
+﻿$primary: #0b5708;
+// $danger: blue;
+
+@import "/node_modules/bootstrap/scss/bootstrap";
+
+#sidebar{
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    padding: 1rem;
+    top: 0;
+    left: 0;
+    overflow: auto;
+    background-color: white;
+    border-right: 1px solid black;
+}
+
+.custom-container {
+    margin-left: 250px;
+    padding-left: 10px;
+}
