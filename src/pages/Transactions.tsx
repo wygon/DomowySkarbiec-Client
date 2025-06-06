@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import { Col, Form, Row, Spinner, Table } from "react-bootstrap";
+import { Col, Form, ProgressBar, Row, Spinner, Table } from "react-bootstrap";
 import { LoginContext } from "../context/LoginContext";
 import AddTransacitonComponent from "../components/AddTransacitonComponent";
 import type { Transaction } from "../types/Transaction";
+import TransactionsChart from "../components/TransactionsChart";
+import type { FamilyWithUsersDto } from "../types/family/FamilyWithUsersDto";
 
 export default function(){
     const context = useContext(LoginContext);
@@ -11,15 +13,20 @@ export default function(){
 
     const [userTransaction, setUserTransaction] = useState<Transaction[]>();
     const [familyTransaction, setFamilyTransaction] = useState<Transaction[]>();
+    const [familyUsersTransaction, setFamilyUsersTransaction] = useState<FamilyWithUsersDto>();
 
     const [userFilter, setUserFilter] = useState<'all' | 'Dochód' | 'Wydatek'>('all');
     const [familyFilter, setFamilyFilter] = useState<'all' | 'Dochód' | 'Wydatek'>('all');
+    const [familyUsersFilter, setFamilyUsersFilter] = useState<'all' | 'Dochód' | 'Wydatek'>('all');
 
     useEffect(() => {
         getAllUserTransactionData();
         if(context.family != null)
+        {
             getAllUserFamilyTransactionData();
-    }, []);
+            getAllFamilyUsersWithTransactionsData();
+        }
+    }, [context?.user?.id, context?.family?.id]);
 
     const getFilteredUserTransactions = () => {
         if (!userTransaction) return [];
@@ -33,8 +40,15 @@ export default function(){
         return familyTransaction.filter(t => t.type === familyFilter);
     };
 
+    // const getFilteredFamilyUsersTransactions = () => {
+    //     if (!familyUsersTransaction) return [];
+    //     if (familyUsersFilter === 'all') return familyUsersTransaction;
+    //     return familyUsersTransaction.filter(t => t.users === familyUsersFilter);
+    // };
+
     const filteredUserTransactions = getFilteredUserTransactions();
     const filteredFamilyTransactions = getFilteredFamilyTransactions();
+    // const filteredFamilyUsersTransactions = getFilteredFamilyUsersTransactions();
 
     const totalSpend = userTransaction?.reduce((sum, t) =>{
         return t.type === "Wydatek" ? sum + t.value : sum;
@@ -43,7 +57,22 @@ export default function(){
     const totalIncome = userTransaction?.reduce((sum, t) =>{
         return t.type === "Dochód" ? sum + t.value : sum;
     }, 0);
+    const totalFamilySpend = familyTransaction?.reduce((sum, t) => {
+        return t.type === "Wydatek" ? sum + t.value : sum;
+    }, 0);
 
+    const progressBarInfo = () => {
+        const per = context.family?.wage
+            ? (totalFamilySpend / context.family.wage) * 100
+            : 0;
+        const variant = totalFamilySpend > (context.family?.wage || 0) ? "danger" : "success";
+        
+        return {
+            percent: per,
+            variant: variant
+        };
+    };
+    const progressBarData = progressBarInfo();
     const formatDate = (isoString: string) => {
         const date = new Date(isoString);
         return date.toLocaleDateString('pl-PL', {
@@ -149,9 +178,65 @@ export default function(){
         </tbody>
     </Table>
     </>
+
+    const myFamilyUsersTransaction = familyUsersTransaction === undefined
+    ? <Spinner animation="border" variant="success" />
+    : <>
+    <Row className="align-items-center">
+        <Col md={4}>
+        <Form.Group>
+            <Form.Label>Filtruj po typie:</Form.Label>
+            <Form.Select
+            value={familyFilter}
+            onChange={(e) => setFamilyUsersFilter(e.target.value as 'all' | 'Dochód' | 'Wydatek')}
+            >
+                <option value="all">Wszystkie</option>
+                <option value="Dochód">Dochód</option>
+                <option value="Wydatek">Wydatek</option>
+            </Form.Select>
+        </Form.Group>
+        </Col>
+        <Col md={8}>
+            <div className="mt-4">
+                <small className="text-muted">
+                    Wyświetlane: {familyUsersTransaction.length} z {familyUsersTransaction.length} transakcji
+                </small>
+            </div>
+        </Col>
+    </Row>
+    <Table>
+        <thead>
+            <tr>
+                <th>Osoba</th>
+                <th>Typ</th>
+                <th>Wartość</th>
+                <th>Opis</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {familyUsersTransaction?.users?.map(user => 
+                user.transactions.map(t => (
+                    <tr key={`${user.id}-${t.id}`}>
+                        <td>{user.name}</td>
+                        <td>{t.type}</td>
+                        <td>{t.value}</td>
+                        <td>{t.description}</td>
+                        <td>{t.transactionDate}</td>
+                    </tr>
+                ))
+            ).flat()}
+        </tbody>
+    </Table>
+    </>
+
     return(
         <div>
         <h1>Transakcje</h1>
+        {userTransaction && 
+        <TransactionsChart transactions={userTransaction} />
+        }
+        
         <AddTransacitonComponent onSuccess={() =>{
             getAllUserTransactionData();
             if(context.family != null)
@@ -161,12 +246,27 @@ export default function(){
         <p>Wydane: {totalSpend}</p>
         <p>Dochód: {totalIncome}</p>
         {myTransaction}
-        {context.family &&
+        {/* {familyTransaction &&
             <>
+                <TransactionsChart transactions={familyTransaction} />
                 <h2>Transakcje rodziny</h2>
+                <p>Calkowity budzet: {context.family?.wage} zł</p>
+                <p>Wykorzystano: {totalFamilySpend} zł</p>
+                {progressBarData.variant === "danger" && <p>Wykorzystaliście cały budżet!</p>}
+                <ProgressBar 
+                variant={progressBarData.variant}
+                now={progressBarData.percent}
+                key={1}
+                className="w-50"
+                />
                 {myFamilyTransaction}
             </>
-        }
+        } */}
+        {myFamilyUsersTransaction &&  
+        <>
+            elo
+            {myFamilyUsersTransaction}
+        </>}
         </div>
     );
 
@@ -182,6 +282,14 @@ export default function(){
         if(response.ok){
             const data = await response.json();
                 setFamilyTransaction(data);
+        }
+    }
+    
+    async function getAllFamilyUsersWithTransactionsData(){
+        const response  = await fetch(`http://localhost:5051/api/family/${context?.family?.id}/users-with-transactions`);
+        if(response.ok){
+            const data = await response.json();
+            setFamilyUsersTransaction(data);
         }
     }
 }

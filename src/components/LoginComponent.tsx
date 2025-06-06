@@ -35,7 +35,7 @@ export default function (){
                 navigate(`/transactions/${userData.id}`);    
                 return;
             }
-            const familyRes = await fetch(`http://localhost:5051/api/users/${userData.familyId}/family`)
+            const familyRes = await fetch(`http://localhost:5051/api/users/${userData.id}/family`)
             if(familyRes.ok){
                 const familyData = await familyRes.json();
                 setFamily(familyData);

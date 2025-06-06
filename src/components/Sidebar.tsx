@@ -20,6 +20,7 @@ export default function () {
         <div id="sidebar">
             <h1>Tukanowy Skarbiec</h1>
             <p>UserId:{context.user?.id}</p>
+            <p>:{context.user?.name}</p>
             <p>FamilyId:{context.family?.id}</p>
             <div className="d-flex flex-column gap-2">
                 {context.isLogin
