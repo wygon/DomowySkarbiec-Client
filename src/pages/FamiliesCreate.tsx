@@ -6,7 +6,6 @@ import { LoginContext } from "../context/LoginContext";
 export default function(){
     const [familyName, setFamilyName] = useState("");
     const [familyWage, setFamilyWage] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -37,7 +36,6 @@ export default function(){
 
             if(!res.ok){
                 throw new Error('Cant make new family');
-                return;
             }
 
             const newFamily = await res.json();
@@ -84,17 +82,15 @@ export default function(){
                             <h3 className="mb-0">Utwórz nową rodzinę</h3>
                         </div>
                         <div className="card-body">
-                            {/* Alert sukcesu */}
                             {showSuccess && (
-                                <Alert variant="success" onClose={() => setShowSuccess(false)} dismissible>
+                                <Alert variant="success" onClose={() => setShowSuccess(false)}>
                                     <Alert.Heading>Sukces!</Alert.Heading>
                                     Rodzina została utworzona pomyślnie. Zostaniesz przekierowany...
                                 </Alert>
                             )}
 
-                            {/* Alert błędu */}
                             {showError && (
-                                <Alert variant="danger" onClose={() => setShowError(false)} dismissible>
+                                <Alert variant="danger" onClose={() => setShowError(false)}>
                                     <Alert.Heading>Błąd!</Alert.Heading>
                                     {errorMessage}
                                 </Alert>
@@ -107,73 +103,44 @@ export default function(){
                                         type="text"
                                         value={familyName}
                                         onChange={(e) => setFamilyName(e.target.value)}
-                                        placeholder="np. Rodzina Kowalskich"
-                                        disabled={isLoading}
+                                        placeholder="Twoje nazwisko"
                                         required
                                     />
-                                    <Form.Text className="text-muted">
-                                        Podaj nazwę swojej rodziny
-                                    </Form.Text>
                                 </Form.Group>
 
                                 <Form.Group className="mb-3">
                                     <Form.Label>Miesięczny budżet rodziny (zł)</Form.Label>
                                     <Form.Control
                                         type="number"
-                                        step="0.01"
                                         min="0"
                                         value={familyWage}
                                         onChange={(e) => setFamilyWage(e.target.value)}
-                                        placeholder="np. 8000"
-                                        disabled={isLoading}
+                                        placeholder="Wpisz kwotę"
                                         required
                                     />
-                                    <Form.Text className="text-muted">
-                                        Łączny miesięczny budżet rodziny na wydatki
-                                    </Form.Text>
                                 </Form.Group>
 
                                 <div className="d-flex gap-2">
                                     <Button
                                         variant="primary"
                                         type="submit"
-                                        disabled={isLoading}
                                         onClick={handleCreateFamily}
                                         className="flex-grow-1"
                                     >
-                                        {isLoading ? (
-                                            <>
-                                                <Spinner
-                                                    as="span"
-                                                    animation="border"
-                                                    size="sm"
-                                                    role="status"
-                                                    aria-hidden="true"
-                                                    className="me-2"
-                                                />
-                                                Tworzenie...
-                                            </>
-                                        ) : (
-                                            "Utwórz rodzinę"
-                                        )}
+                                        Utwórz rodzinę
                                     </Button>
 
                                     <Button
                                         variant="secondary"
-                                        // onClick={handleClose}
-                                        disabled={isLoading}
                                     >
                                         Wyczyść
                                     </Button>
                                 </div>
                             </Form>
 
-                            {/* Informacja o użytkowniku */}
                             {user && (
                                 <div className="mt-3 p-2 bg-light rounded">
-                                    <small className="text-muted">
                                         <strong>Założyciel:</strong> {user.name} ({user.email})
-                                    </small>
                                 </div>
                             )}
                         </div>

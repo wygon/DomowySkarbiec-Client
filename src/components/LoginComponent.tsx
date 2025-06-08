@@ -93,7 +93,9 @@ export default function (){
             {showLogin 
             ? 
             <>
-            <Form className="d-flex flex-column w-50">
+            <Form className="d-flex flex-column w-50"
+            onSubmit={handleLogin}
+            >
                 <Form.Group>
                     <Form.Label>Wpisz swoje ID:</Form.Label>
                     <Form.Control
@@ -103,6 +105,7 @@ export default function (){
                     placeholder="Wpisz swoje ID"/>
                 </Form.Group>
                 <Button
+                // type="submit"
                 onClick={handleLogin}
                 >Zaloguj się</Button>
             </Form>
