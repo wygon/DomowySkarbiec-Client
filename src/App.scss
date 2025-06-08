@@ -16,6 +16,37 @@
 }
 
 .custom-container {
-    margin-left: 250px;
-    padding-left: 10px;
+    @media (min-width: 992px){
+        margin-left: 250px;
+        padding-left: 10px;
+    }
+}
+
+#user-data-alert {
+    width: max-content;
+    @media (max-width: 991px) {
+        width: 100%;
+        text-align: center;
+        
+        .d-flex {
+            align-items: center;
+        }
+        
+        span > span {
+            width: 100%;
+            text-align: center;
+        }
+    }
+}
+.transaction-info {
+@media (max-width: 991px) {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        text-align: center;
+    }
+}
+.row {
+    --bs-gutter-x: 0;
 }

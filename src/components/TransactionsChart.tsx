@@ -1,8 +1,11 @@
 import type { Transaction } from "../types/Transaction";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
-
-export default function({transactions} : {transactions: Transaction[]}){
+interface Props {
+    transactions: Transaction[];
+    className?: string;
+}
+export default function({transactions, className} : Props){
     const preparePieData = (transactions: Transaction[]) => {
         const income = transactions
             .filter(t => t.type === 'Dochód')
@@ -25,7 +28,7 @@ export default function({transactions} : {transactions: Transaction[]}){
     }
 
     const pieChart = () => (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width={"90%"} height={300}>
             <PieChart>
                 <Pie
                 data={pieData}
@@ -45,6 +48,6 @@ export default function({transactions} : {transactions: Transaction[]}){
         </ResponsiveContainer>
     );
     return(
-      <div>{pieChart()}</div>  
+      <div className={`${className}`}>{pieChart()}</div>  
     );
 }

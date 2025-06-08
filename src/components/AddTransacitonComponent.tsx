@@ -64,7 +64,7 @@ export default function ({ onSuccess }: { onSuccess: () => void }) {
         <div>
             <Button
                 onClick={handleShow}
-            >Dodaj transakcje</Button>
+            >Dodaj nową transakcje</Button>
             <Modal
                 show={showTransactionModal}
             >

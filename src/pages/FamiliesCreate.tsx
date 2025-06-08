@@ -47,6 +47,7 @@ export default function(){
                 id: user?.id,
                 name: user?.name,
                 email: user?.email,
+                familyRole: 'Head',
                 familyId: newFamily.id
             };
 

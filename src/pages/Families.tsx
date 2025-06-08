@@ -45,6 +45,7 @@ export default function(){
                 id: context.user?.id,
                 name: context.user?.name,
                 email: context.user?.email,
+                familyRole: null,
                 familyId: null
             };
 
